@@ -1,0 +1,18 @@
+{
+  "name": "토목기사 필기 CBT 120제 · 쉬운 풀이 & 음성 듣기",
+  "short_name": "토목CBT 쉬운풀이",
+  "description": "2003~2022년 토목기사 필기 기출 6,840문제를 초등학생도 이해할 수 있는 쉬운 풀이와 자연스러운 한국어 음성 듣기로 학습하는 CBT 웹앱",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#1d4ed8",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

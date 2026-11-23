@@ -1,0 +1,16 @@
+server.py
+앱_실행.bat
+deploy_vercel.py
+Vercel_배포하기.bat
+__pycache__/
+*.pyc
+*.log
+original/
+.env
+.env.*
+.gitignore
+.vercel/
+.github/
+.git/
+README.md
+SECURITY.md

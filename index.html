@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#1d4ed8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="토목CBT 쉬운풀이">
+  <title>토목기사 필기 CBT 120제 · 초등학생 쉬운 풀이 &amp; 음성 듣기</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+  <link rel="apple-touch-icon" href="./icons/icon.svg">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+  <link rel="stylesheet" href="./styles.css?v=7">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand" id="btnHomeLogo" title="홈으로 이동">
+        <img class="brand-icon" src="./icons/icon.svg" alt="로고">
+        <div class="brand-text">
+          <span>토목기사 CBT 120제</span>
+          <small class="brand-sub">쉬운 풀이 &amp; 음성 듣기</small>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="btnOpenGlossary" type="button" title="초등학생 눈높이 토목 용어·개념 사전">📖 용어사전</button>
+        <button class="icon-btn" id="btnOpenVoiceSettings" type="button" title="음성 속도·목소리 설정">🔊 음성설정</button>
+        <button class="icon-btn hidden" id="btnInstallPwa" type="button">📲 설치</button>
+        <button class="icon-btn" id="btnTheme" type="button" title="다크모드 전환">🌙 다크</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ==================== 홈 화면 ==================== -->
+    <section id="screenHome">
+      <div class="hero-card">
+        <div class="hero-badge" id="dbMetaBadge">2003~2026년 61회차 · 7,320문제 · 🌱 초등학생 쉬운 풀이 &amp; 🔊 음성 듣기</div>
+        <h1>초등학생도 이해하는 토목기사 CBT 120제</h1>
+        <p class="hero-sub">어려운 공식과 전공 용어를 쉬운 비유와 한 줄 계산으로 풀어쓰고, <strong>「음성으로 듣기」</strong>를 누르면 선생님이 읽어주듯 귀로 들으며 공부할 수 있어요.</p>
+
+        <div class="mode-switch" role="tablist" aria-label="풀이 모드 선택">
+          <button class="mode-opt active" id="optPractice" type="button" data-mode="practice">
+            ⚡ 연습 모드 (즉시 쉬운 풀이)
+            <small>버튼 누르면 바로 쉬운 해설 · 음성 듣기</small>
+          </button>
+          <button class="mode-opt" id="optExam" type="button" data-mode="exam">
+            ⏱️ 실전 모드 (180분)
+            <small>120문제 풀이 후 일괄 채점 &amp; 해설</small>
+          </button>
+        </div>
+
+        <button class="btn-primary-hero" id="btnStartRandom120" type="button">
+          🎯 120문제 랜덤 모의고사 시작하기
+        </button>
+      </div>
+
+      <div class="resume-banner hidden" id="resumeBanner">
+        <div class="resume-info" id="resumeText">진행 중이던 모의고사가 있습니다.</div>
+        <div class="resume-actions">
+          <button class="btn btn-primary btn-sm" id="btnResume" type="button">이어서 풀기</button>
+          <button class="btn btn-sm" id="btnDiscardResume" type="button">삭제</button>
+        </div>
+      </div>
+
+      <!-- 최신 추가 회차 (2023~2026) 바로 풀기 -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>🆕 최신 추가 기출 &amp; 2026 모의고사 바로 풀기</span>
+          <span class="badge badge-green">480문제 신규 수록</span>
+        </div>
+        <div class="new-exams-grid" id="newExamsGrid"></div>
+      </div>
+
+      <!-- 키워드 검색 풀이 -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>🔍 어려운 개념·키워드만 골라 풀기</span>
+        </div>
+        <div class="search-row">
+          <input type="search" id="keywordSearchInput" class="search-input" placeholder="예: 푸아송비, 표면부하율, 베르누이, 압밀, 완화곡선, BOD..." aria-label="기출문제 키워드 검색">
+          <button class="btn btn-primary" id="btnKeywordSearch" type="button">검색해서 풀기</button>
+        </div>
+        <div class="quick-tags" id="quickSearchTags">
+          <button type="button" class="tag-chip" data-kw="푸아송">푸아송비</button>
+          <button type="button" class="tag-chip" data-kw="모멘트">휨모멘트</button>
+          <button type="button" class="tag-chip" data-kw="완화곡선">완화곡선</button>
+          <button type="button" class="tag-chip" data-kw="베르누이">베르누이</button>
+          <button type="button" class="tag-chip" data-kw="프리스트레스">프리스트레스</button>
+          <button type="button" class="tag-chip" data-kw="압밀">압밀</button>
+          <button type="button" class="tag-chip" data-kw="표면부하율">표면부하율</button>
+          <button type="button" class="tag-chip" data-kw="합리식">합리식</button>
+        </div>
+      </div>
+
+      <!-- 오답노트 & 북마크 -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>📚 오답노트 &amp; 북마크</span>
+        </div>
+        <div class="quick-row">
+          <div class="stat-card" id="cardWrongNote" role="button" tabindex="0">
+            <div>
+              <div class="stat-card-title">❌ 오답노트 복습</div>
+              <div class="stat-card-sub">틀렸던 문제만 모아서 쉬운 풀이로 복습</div>
+            </div>
+            <span class="stat-pill red" id="wrongCountBadge">0</span>
+          </div>
+          <div class="stat-card" id="cardBookmarks" role="button" tabindex="0">
+            <div>
+              <div class="stat-card-title">⭐ 별표(북마크) 문제</div>
+              <div class="stat-card-sub">중요 표시한 문제 집중 복습</div>
+            </div>
+            <span class="stat-pill amber" id="bookmarkCountBadge">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 과목별 집중 랜덤 풀이 -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>📐 과목별 집중 랜덤 풀이</span>
+          <div class="count-chips" id="subjectCountChips">
+            <button class="chip active" type="button" data-count="20">20문제</button>
+            <button class="chip" type="button" data-count="40">40문제</button>
+            <button class="chip" type="button" data-count="60">60문제</button>
+          </div>
+        </div>
+        <div class="subject-grid" id="subjectGrid"></div>
+      </div>
+
+      <!-- 회차별 기출 -->
+      <div class="section-card">
+        <div class="section-title">
+          <span>📅 회차별 기출 · 모의고사 그대로 풀기 (2003~2026)</span>
+        </div>
+        <div class="session-picker">
+          <select id="sessionSelect" aria-label="기출 회차 선택"></select>
+          <button class="btn btn-primary" id="btnStartSession" type="button">선택 회차 시작 (120문제)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 문제 풀이 화면 ==================== -->
+    <section id="screenQuiz" class="quiz-wrapper hidden">
+      <div class="quiz-topbar">
+        <div class="quiz-top-row">
+          <div class="quiz-stats">
+            <span class="badge badge-blue" id="quizModeBadge">연습 모드</span>
+            <span id="quizProgressText">1 / 120</span>
+            <span class="badge badge-green" id="quizLiveScore">정답 0 · 오답 0</span>
+            <span class="badge badge-gray hidden" id="quizTimer">180:00</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="icon-btn" id="btnBookmark" type="button" title="별표 북마크">☆</button>
+            <button class="icon-btn" id="btnFinishEarly" type="button">채점</button>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="quizProgressFill"></div>
+        </div>
+      </div>
+
+      <article class="question-card" id="questionCard">
+        <div class="q-meta-row">
+          <div class="q-meta-left">
+            <span class="badge badge-blue" id="qSubjectBadge">1과목 · 응용역학</span>
+            <span class="badge badge-gray" id="qSourceBadge">2022.04.24 기출 #1</span>
+          </div>
+          <button class="tts-mini-btn" id="btnSpeakQuestion" type="button" title="문제와 보기 4개를 음성으로 듣기">
+            🔈 문제 듣기
+          </button>
+        </div>
+        <div class="q-stem" id="qStem"></div>
+        <div class="choices-list" id="choicesList"></div>
+
+        <!-- 정답 확인 & 초등학생 쉬운 풀이 + 음성 듣기 영역 -->
+        <div class="feedback-box hidden" id="feedbackBox">
+          <div class="feedback-title">
+            <span id="feedbackHeadline">정답입니다!</span>
+            <button class="btn btn-sm hidden" id="btnRemoveWrong" type="button">오답노트에서 제거</button>
+          </div>
+
+          <!-- 음성으로 듣기 전용 컨트롤 바 -->
+          <div class="tts-player-bar" id="ttsPlayerBar">
+            <div class="tts-main-controls">
+              <button class="tts-play-btn" id="btnSpeakExp" type="button">
+                <span class="tts-btn-icon" id="ttsBtnIcon">🔊</span>
+                <span id="ttsBtnLabel">음성으로 듣기</span>
+                <span class="tts-wave hidden" id="ttsWave" aria-hidden="true"><i></i><i></i><i></i></span>
+              </button>
+              <button class="tts-stop-btn hidden" id="btnStopExp" type="button" title="음성 정지">⏹ 정지</button>
+              <span class="tts-status-pill hidden" id="ttsStatusPill">읽는 중...</span>
+            </div>
+            <div class="tts-speed-group" id="ttsSpeedGroup" role="group" aria-label="음성 읽기 속도">
+              <button type="button" class="speed-chip" data-rate="0.9">0.9x</button>
+              <button type="button" class="speed-chip active" data-rate="1.05">1.05x</button>
+              <button type="button" class="speed-chip" data-rate="1.2">1.2x</button>
+              <button type="button" class="speed-chip" data-rate="1.35">1.35x</button>
+            </div>
+          </div>
+
+          <!-- 쉬운 풀이 / 원래 풀이 탭 전환 -->
+          <div class="exp-tabs" role="tablist" aria-label="풀이 스타일 선택">
+            <button type="button" class="exp-tab active" id="tabEasyExp" data-tab="easy" role="tab" aria-selected="true">
+              🌱 초등학생 쉬운 풀이
+            </button>
+            <button type="button" class="exp-tab" id="tabOrigExp" data-tab="orig" role="tab" aria-selected="false">
+              📖 원래 공식 풀이
+            </button>
+          </div>
+
+          <div class="feedback-exp" id="feedbackExp"></div>
+        </div>
+      </article>
+
+      <div class="quiz-options-bar">
+        <div class="quiz-toggles">
+          <label class="toggle-label" id="autoReadWrap">
+            <input type="checkbox" id="chkAutoRead">
+            <span>🎧 정답 확인 시 자동으로 음성 듣기</span>
+          </label>
+          <label class="toggle-label" id="autoNextWrap">
+            <input type="checkbox" id="chkAutoNext">
+            <span>정답 시 자동으로 다음 문제 이동</span>
+          </label>
+        </div>
+        <span class="kbd-hint">단축키: 1~4 선택 · ←/→ 이동 · S 음성 듣기 · T 풀이 전환 · O OMR</span>
+      </div>
+
+      <div class="bottom-nav">
+        <div class="bottom-nav-inner">
+          <button class="nav-btn" id="btnPrev" type="button">← 이전</button>
+          <button class="nav-btn omr" id="btnOpenOmr" type="button">📋 OMR</button>
+          <button class="nav-btn primary" id="btnNext" type="button">다음 →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 채점 결과 화면 ==================== -->
+    <section id="screenResult" class="hidden">
+      <div class="result-hero" id="resultHero">
+        <div class="hero-badge" id="resultModeLabel">120문제 랜덤 모의고사 결과</div>
+        <div class="result-big" id="resultScoreBig">0점</div>
+        <div class="result-sub" id="resultSummaryText"></div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-title">
+          <span>📊 과목별 성적 분석 (과락 기준: 40점 미만 / 합격 평균: 60점 이상)</span>
+        </div>
+        <div id="subjectResultsList"></div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn btn-primary" id="btnRetryWrong" type="button">❌ 틀린 문제만 다시 풀기</button>
+        <button class="btn" id="btnReviewAll" type="button">🔍 쉬운 해설 전체 보기</button>
+        <button class="btn" id="btnNewRandom120" type="button">🎯 새 120문제 랜덤 출제</button>
+        <button class="btn" id="btnBackHomeResult" type="button">🏠 홈으로</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- OMR 모달 -->
+  <div class="modal-backdrop hidden" id="omrModal" role="dialog" aria-modal="true" aria-label="OMR 답안지">
+    <div class="modal-panel">
+      <div class="modal-header">
+        <strong id="omrTitle">📋 OMR 답안지 (0 / 120 풀이)</strong>
+        <button class="icon-btn" id="btnCloseOmr" type="button">✕ 닫기</button>
+      </div>
+      <div class="modal-body" id="omrBody"></div>
+      <div class="modal-footer">
+        <button class="btn" id="btnJumpUnanswered" type="button">안 푼 문제로 이동</button>
+        <button class="btn btn-primary" id="btnSubmitFromOmr" type="button">제출 및 채점</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 초등 토목 용어·개념 사전 모달 -->
+  <div class="modal-backdrop hidden" id="glossaryModal" role="dialog" aria-modal="true" aria-label="초등학생 눈높이 토목 용어사전">
+    <div class="modal-panel modal-panel-lg">
+      <div class="modal-header">
+        <strong>📖 초등학생 눈높이 토목 핵심 개념 사전</strong>
+        <button class="icon-btn" id="btnCloseGlossary" type="button">✕ 닫기</button>
+      </div>
+      <div class="glossary-toolbar">
+        <input type="search" id="glossarySearch" class="search-input" placeholder="궁금한 용어나 개념을 입력해 보세요 (예: 푸아송, 압밀, 베르누이...)">
+        <div class="glossary-subj-tabs" id="glossarySubjTabs">
+          <button type="button" class="chip active" data-s="0">전체</button>
+          <button type="button" class="chip" data-s="1">1.응용역학</button>
+          <button type="button" class="chip" data-s="2">2.측량학</button>
+          <button type="button" class="chip" data-s="3">3.수리·수문</button>
+          <button type="button" class="chip" data-s="4">4.RC·강구조</button>
+          <button type="button" class="chip" data-s="5">5.토질·기초</button>
+          <button type="button" class="chip" data-s="6">6.상하수도</button>
+        </div>
+      </div>
+      <div class="modal-body" id="glossaryBody"></div>
+    </div>
+  </div>
+
+  <!-- 음성 설정 모달 -->
+  <div class="modal-backdrop hidden" id="voiceModal" role="dialog" aria-modal="true" aria-label="음성 읽기 설정">
+    <div class="modal-panel modal-panel-sm">
+      <div class="modal-header">
+        <strong>🔊 음성으로 듣기 설정</strong>
+        <button class="icon-btn" id="btnCloseVoice" type="button">✕ 닫기</button>
+      </div>
+      <div class="modal-body voice-settings-body">
+        <div class="setting-field">
+          <label for="voiceSelect">한국어 목소리 선택</label>
+          <select id="voiceSelect" class="setting-select"></select>
+          <small class="setting-help">✨ Supertone Supertonic-2 오픈소스 신경망 여성 음성 (MIT / OpenRAIL-M · 저작권 무료 · 최초 1회 캐시 저장 후 끊김 없이 재생). 즉시 듣기를 원하면 목록 맨 아래 「브라우저 기본 음성」도 선택할 수 있어요.</small>
+        </div>
+        <div class="setting-field">
+          <label>읽기 속도</label>
+          <div class="voice-speed-row" id="modalSpeedRow">
+            <button type="button" class="chip" data-rate="0.9">0.9x 천천히</button>
+            <button type="button" class="chip active" data-rate="1.05">1.05x 자연스럽게</button>
+            <button type="button" class="chip" data-rate="1.2">1.2x 약간 빠르게</button>
+            <button type="button" class="chip" data-rate="1.35">1.35x 빠르게</button>
+          </div>
+        </div>
+        <div class="setting-field">
+          <label class="toggle-label">
+            <input type="checkbox" id="chkAutoReadModal">
+            <span>🎧 연습 모드에서 답을 고르면 자동으로 쉬운 풀이 읽어주기</span>
+          </label>
+        </div>
+        <div class="setting-test-row">
+          <button type="button" class="btn btn-primary" id="btnTestVoice">🔊 목소리 테스트 듣기</button>
+          <button type="button" class="btn" id="btnStopTestVoice">⏹ 정지</button>
+        </div>
+        <div class="tts-status-pill hidden" id="voiceTestStatus" style="margin-top:8px; display:inline-block;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 도면 확대 Lightbox -->
+  <div class="zoom-backdrop hidden" id="zoomModal" role="dialog" aria-modal="true" aria-label="도면 확대">
+    <div class="zoom-box">
+      <img id="zoomImg" src="" alt="도면 확대" referrerpolicy="no-referrer">
+      <div class="zoom-tip">화면을 클릭하거나 ESC를 누르면 닫힙니다</div>
+    </div>
+  </div>
+
+  <!-- 로딩 토스트 -->
+  <div class="loading-toast hidden" id="loadingToast" role="status" aria-live="polite">
+    <span class="loading-spinner"></span>
+    <span id="loadingToastText">문제를 불러오는 중...</span>
+  </div>
+
+  <script src="./data/index.js?v=7"></script>
+  <script src="./data/concept_bank.js?v=7"></script>
+  <script src="./supertonic_web.js?v=7"></script>
+  <script src="./tts.js?v=7"></script>
+  <script src="./easy_explainer.js?v=7"></script>
+  <script src="./app.js?v=7"></script>
+</body>
+</html>

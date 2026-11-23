@@ -1,0 +1,89 @@
+name: Security & Data Integrity Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run static security, SRI, header & dataset XSS audit
+        run: |
+          python3 - <<'PY'
+          import glob, json, os, re, sys
+
+          errors = []
+
+          # 1. Verify mandatory security headers in vercel.json
+          vc = json.load(open("vercel.json", encoding="utf-8"))
+          all_headers = {}
+          for rule in vc.get("headers", []):
+              if rule.get("source") == "/(.*)":
+                  for h in rule.get("headers", []):
+                      all_headers[h["key"].lower()] = h["value"]
+          for req in [
+              "content-security-policy",
+              "strict-transport-security",
+              "x-content-type-options",
+              "x-frame-options",
+              "referrer-policy",
+              "permissions-policy",
+              "cross-origin-opener-policy",
+          ]:
+              if req not in all_headers:
+                  errors.append(f"Missing security header in vercel.json: {req}")
+
+          csp = all_headers.get("content-security-policy", "")
+          if "frame-ancestors 'none'" not in csp or "object-src 'none'" not in csp:
+              errors.append("CSP missing frame-ancestors 'none' or object-src 'none'")
+
+          # 2. Verify index.html has zero inline scripts/handlers and SRI on all CDN links
+          html = open("index.html", encoding="utf-8").read()
+          if re.search(r"<script(?![^>]*\bsrc=)[^>]*>", html, re.I):
+              errors.append("Inline <script> detected in index.html")
+          if re.search(r"\bon[a-z]+\s*=", html, re.I):
+              errors.append("Inline event handler detected in index.html")
+          for tag in re.findall(r"<(?:script|link)[^>]+https://cdn\.jsdelivr\.net[^>]*>", html, re.I):
+              if "integrity=\"sha384-" not in tag:
+                  errors.append(f"Missing SHA-384 SRI on CDN asset: {tag[:100]}")
+
+          # 3. Verify zero XSS tags / plain http:// URLs across all 7,320 questions
+          q_total = 0
+          for p in sorted(glob.glob("data/sessions/*.json")):
+              qs = json.load(open(p, encoding="utf-8"))
+              q_total += len(qs)
+              for q in qs:
+                  blob = f"{q.get('q','')} {' '.join(q.get('c',[]))} {q.get('e','')}"
+                  if re.search(r"<script|javascript:|<iframe|<object|<embed|\bon[a-z]+\s*=", blob, re.I):
+                      errors.append(f"Suspicious HTML in question {q.get('i')}")
+                  if "http://" in blob:
+                      errors.append(f"Insecure http:// URL in question {q.get('i')}")
+          if q_total != 7320:
+              errors.append(f"Expected 7320 questions, found {q_total}")
+
+          # 4. Basic secret leak scan across tracked text files
+          secret_rx = re.compile(r"(?:VERCEL_OIDC_TOKEN=|ghp_[A-Za-z0-9]{30,}|vercel_[A-Za-z0-9_]{20,}|BEGIN (?:RSA |EC )?PRIVATE KEY)")
+          for fn in ["index.html", "app.js", "easy_explainer.js", "tts.js", "supertonic_web.js", "server.py", "vercel.json", "README.md", "SECURITY.md"]:
+              if os.path.exists(fn) and secret_rx.search(open(fn, encoding="utf-8").read()):
+                  errors.append(f"Possible secret leaked in {fn}")
+
+          if errors:
+              print("SECURITY AUDIT FAILED:")
+              for e in errors:
+                  print(" -", e)
+              sys.exit(1)
+          print(f"SECURITY AUDIT PASSED! ({q_total} questions, CSP+SRI+Headers+Secret scan clean)")
+          PY

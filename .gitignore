@@ -1,0 +1,23 @@
+# Environment & Secrets (NEVER commit!)
+.env
+.env.*
+*.pem
+*.key
+*.secret
+
+# Vercel local CLI link, tokens & helper scripts
+.vercel/
+deploy_vercel.py
+Vercel_배포하기.bat
+
+# Python caches & local runtime artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.log
+
+# Local backup / OS junk
+original/
+.DS_Store
+Thumbs.db
+desktop.ini
