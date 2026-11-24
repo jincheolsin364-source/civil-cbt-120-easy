@@ -57,6 +57,8 @@ jobs:
           if re.search(r"\bon[a-z]+\s*=", html, re.I):
               errors.append("Inline event handler detected in index.html")
           for tag in re.findall(r"<(?:script|link)[^>]+https://cdn\.jsdelivr\.net[^>]*>", html, re.I):
+              if 'rel="preconnect"' in tag.lower():
+                  continue
               if "integrity=\"sha384-" not in tag:
                   errors.append(f"Missing SHA-384 SRI on CDN asset: {tag[:100]}")
 
